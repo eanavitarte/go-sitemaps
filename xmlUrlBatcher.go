@@ -35,7 +35,7 @@ func (B *xmlUrlBatcher) pump(pipeline seriePipes) {
 	pack := B.pack()
 
 	if B.errors != nil {
-		log.Println("[Error]:", B.errors)
+		log.Println("[Error] pumping data:", B.errors)
 		// TODO: process error
 	} else {
 		pipeline.files <- pack

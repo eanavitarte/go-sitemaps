@@ -31,34 +31,34 @@ func (F *sitemapFile) save(compression CompressOption) {
 func (F *sitemapFile) writeToFile(filePath string) {
 	f, err := os.Create(filePath)
 	if err != nil {
-		log.Println("[Error]:", err)
+		log.Println("[Error] creating file:", err)
 		return
 	}
 	defer f.Close()
 
 	_, err = f.Write(F.xmlContent)
 	if err != nil {
-		log.Println("[Error]:", err)
+		log.Println("[Error] writing to file:", err)
 	}
 }
 
 func (F *sitemapFile) writeToGzip(filePath string) {
 	f, err := os.Create(filePath)
 	if err != nil {
-		log.Println("[Error]:", err)
+		log.Println("[Error] creating file:", err)
 		return
 	}
 	defer f.Close()
 
 	zip, err := gzip.NewWriterLevel(f, gzip.BestCompression)
 	if err != nil {
-		log.Println("[Error]:", err)
+		log.Println("[Error] creating compressor:", err)
 		return
 	}
 	defer zip.Close()
 
 	_, err = zip.Write(F.xmlContent)
 	if err != nil {
-		log.Println("[Error]:", err)
+		log.Println("[Error]  writing compress to file:", err)
 	}
 }
