@@ -1,11 +1,7 @@
 package xml
 
 import (
-	"compress/gzip"
-	"encoding/xml"
 	"errors"
-	"os"
-	"time"
 )
 
 const (
@@ -33,56 +29,3 @@ const (
 	Yearly  ChangeFreq = "yearly"
 	Never   ChangeFreq = "never"
 )
-
-type Index struct {
-	XMLName  xml.Name  `xml:"sitemapindex"`
-	XMLNS    string    `xml:"xmlns,attr"`
-	Sitemaps []Sitemap `xml:"sitemap"`
-}
-
-type Sitemap struct {
-	Loc     string     `xml:"loc"`
-	LastMod *time.Time `xml:"lastmod,omitempty"`
-}
-
-func CreateSitemapIndexXml(index Index) (indexXML []byte, err error) {
-	if len(index.Sitemaps) > MAXURLSETSIZE {
-		err = ErrMaxUrlSetSize
-		return
-	}
-	index.XMLNS = XMLNS
-	indexXML = []byte(PREAMBLE)
-	var sitemapIndexXML []byte
-	sitemapIndexXML, err = xml.Marshal(index)
-	if err == nil {
-		indexXML = append(indexXML, sitemapIndexXML...)
-	}
-	if len(indexXML) > MAXFILESIZE {
-		return nil, ErrMaxFileSize
-	}
-	return
-}
-
-// Save and gzip xml
-func SaveXml(xmlFile []byte, path string) (err error) {
-	fo, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer fo.Close()
-
-	if err != nil {
-		return err
-	}
-
-	zip, _ := gzip.NewWriterLevel(fo, gzip.BestCompression)
-	defer zip.Close()
-
-	_, err = zip.Write(xmlFile)
-	if err != nil {
-		return err
-	}
-
-	return err
-
-}

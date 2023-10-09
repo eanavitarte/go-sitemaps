@@ -76,6 +76,7 @@ sitemap.PingSearchEngines("https://example.com/index.xml.gz")
 ### TODO
 - Allow adding stylesheets to Sitemaps Series
 - Add a logger, so you can see what it was processed
+- Wrap xml internal package for using just once import statement
 
 ### Thanks
 

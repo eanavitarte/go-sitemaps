@@ -1,15 +1,20 @@
 package sitemaps
 
 import (
+	"fmt"
+	"log"
+	"time"
+
 	"github.com/eanavitarte/go-sitemaps/xml"
 )
 
 type SitemapsSerieOpts struct {
-	Compress CompressOption
-	Label    string
-	DirPath  string
-	IsMobile bool
-	DoEmpty  bool
+	Compress  CompressOption
+	Label     string
+	DirPath   string
+	PublicUrl string
+	IsMobile  bool
+	DoEmpty   bool
 }
 
 func (Serie *SitemapsSerie) Configure(opts SitemapsSerieOpts) {
@@ -23,17 +28,19 @@ func (Serie *SitemapsSerie) Configure(opts SitemapsSerieOpts) {
 		Serie.dirPath = opts.DirPath
 	}
 	Serie.doEmpty = opts.DoEmpty
+	Serie.publicUrl = opts.PublicUrl
 }
 
 type SitemapsSerie struct {
-	label        string
-	dirPath      string
-	styleSheet   string
+	label   string
+	dirPath string
+	// styleSheet   string
 	serie        int
 	xmlUrlList   []xml.XMLURL
 	isMobile     bool
 	sitemapsList []string
 	pipeline     seriePipes
+	publicUrl    string
 
 	compress CompressOption
 	doEmpty  bool
@@ -57,6 +64,32 @@ func (Serie *SitemapsSerie) Process() {
 // returns the url of already generated sitemaps
 func (Serie *SitemapsSerie) List() []string {
 	return Serie.sitemapsList
+}
+
+func (Serie *SitemapsSerie) Index() {
+	index := new(xml.Index)
+
+	if len(Serie.sitemapsList) <= 0 {
+		return
+	}
+
+	for _, smFileName := range Serie.sitemapsList {
+		lastModified := time.Now()
+		index.Sitemaps = append(index.Sitemaps, xml.Sitemap{Loc: Serie.publicUrl + "/" + smFileName, LastMod: &lastModified})
+	}
+
+	indexXmlContent, err := index.RenderXML()
+	if err != nil {
+		log.Println("[Error] rendering Index File:", err)
+		return
+	}
+
+	indexFile := &sitemapFile{
+		filePath:   fmt.Sprintf("%s/%s-index.xml", Serie.dirPath, Serie.label),
+		xmlContent: indexXmlContent,
+	}
+
+	indexFile.save(Serie.compress)
 }
 
 func (Serie *SitemapsSerie) listenSave() {
