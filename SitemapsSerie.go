@@ -9,6 +9,7 @@ type SitemapsSerieOpts struct {
 	Label    string
 	DirPath  string
 	IsMobile bool
+	DoEmpty  bool
 }
 
 func (Serie *SitemapsSerie) Configure(opts SitemapsSerieOpts) {
@@ -21,6 +22,7 @@ func (Serie *SitemapsSerie) Configure(opts SitemapsSerieOpts) {
 	} else {
 		Serie.dirPath = opts.DirPath
 	}
+	Serie.doEmpty = opts.DoEmpty
 }
 
 type SitemapsSerie struct {
@@ -32,7 +34,9 @@ type SitemapsSerie struct {
 	isMobile     bool
 	sitemapsList []string
 	pipeline     seriePipes
-	compress     CompressOption
+
+	compress CompressOption
+	doEmpty  bool
 }
 
 // add a xml-url to the processing group
@@ -81,16 +85,17 @@ func (Serie *SitemapsSerie) batch() {
 		xmlUrlBatcher := new(xmlUrlBatcher)
 		xmlUrlBatcher.tag(Serie.dirPath, Serie.label, Serie.serie)
 
-		for _, xmlUrl := range Serie.xmlUrlList {
+		if len(Serie.xmlUrlList) > 0 || Serie.doEmpty {
+			for _, xmlUrl := range Serie.xmlUrlList {
 
-			xmlUrlBatcher.stack(xmlUrl)
+				xmlUrlBatcher.stack(xmlUrl)
 
-			if xmlUrlBatcher.full() {
-				xmlUrlBatcher.pump(Serie.pipeline)
+				if xmlUrlBatcher.full() {
+					xmlUrlBatcher.pump(Serie.pipeline)
+				}
 			}
+			xmlUrlBatcher.pump(Serie.pipeline)
 		}
-
-		xmlUrlBatcher.pump(Serie.pipeline)
 
 		Serie.pipeline.doneBatch <- true
 	}()
