@@ -67,7 +67,7 @@ func (Serie *SitemapsSerie) List() []string {
 }
 
 func (Serie *SitemapsSerie) Index() {
-	index := new(xml.Index)
+	index := new(xml.XMLIndex)
 
 	if len(Serie.sitemapsList) <= 0 {
 		return
@@ -75,7 +75,7 @@ func (Serie *SitemapsSerie) Index() {
 
 	for _, smFileName := range Serie.sitemapsList {
 		lastModified := time.Now()
-		index.Sitemaps = append(index.Sitemaps, xml.Sitemap{Loc: Serie.publicUrl + "/" + smFileName, LastMod: &lastModified})
+		index.XMLSitemaps = append(index.XMLSitemaps, xml.XMLSitemap{Loc: Serie.publicUrl + "/" + smFileName, LastMod: &lastModified})
 	}
 
 	indexXmlContent, err := index.RenderXML()

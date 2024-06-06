@@ -12,8 +12,8 @@ import (
 
 // Search all the xml.gz sitemaps_dir directory, uses the modified date of the file as lastModified
 // path_index is included for the function does not include the url of the index in your own content, if it is present in the same directory.
-func CreateIndexByScanDir(targetDir string, indexFileName string, public_url string) (index xml.Index) {
-	index = xml.Index{Sitemaps: []xml.Sitemap{}}
+func CreateIndexByScanDir(targetDir string, indexFileName string, public_url string) (index xml.XMLIndex) {
+	index = xml.XMLIndex{XMLSitemaps: []xml.XMLSitemap{}}
 
 	fs, err := ioutil.ReadDir(targetDir)
 	if err != nil {
@@ -23,7 +23,7 @@ func CreateIndexByScanDir(targetDir string, indexFileName string, public_url str
 	for _, f := range fs {
 		if strings.HasSuffix(f.Name(), ".xml.gz") && !strings.HasSuffix(indexFileName, f.Name()) {
 			lastModified := f.ModTime()
-			index.Sitemaps = append(index.Sitemaps, xml.Sitemap{Loc: public_url + f.Name(), LastMod: &lastModified})
+			index.XMLSitemaps = append(index.XMLSitemaps, xml.XMLSitemap{Loc: public_url + f.Name(), LastMod: &lastModified})
 		}
 	}
 	return

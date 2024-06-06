@@ -5,20 +5,20 @@ import (
 	"time"
 )
 
-type Index struct {
-	XMLName  xml.Name  `xml:"sitemapindex"`
-	XMLNS    string    `xml:"xmlns,attr"`
-	Sitemaps []Sitemap `xml:"sitemap"`
+type XMLIndex struct {
+	XMLName     xml.Name     `xml:"sitemapindex"`
+	XMLNS       string       `xml:"xmlns,attr"`
+	XMLSitemaps []XMLSitemap `xml:"sitemap"`
 }
 
-type Sitemap struct {
+type XMLSitemap struct {
 	Loc     string     `xml:"loc"`
 	LastMod *time.Time `xml:"lastmod,omitempty"`
 }
 
-func (index *Index) RenderXML() (rendered []byte, errors error) {
+func (index *XMLIndex) RenderXML() (rendered []byte, errors error) {
 
-	if len(index.Sitemaps) > MAXURLSETSIZE {
+	if len(index.XMLSitemaps) > MAXURLSETSIZE {
 		errors = ErrMaxUrlSetSize
 		return
 	}
