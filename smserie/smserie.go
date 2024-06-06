@@ -35,7 +35,9 @@ func NewSitemapSerie(opts Options) (*sitemapSerie, error) {
 		sitemapFile.label = opts.Label
 	}
 
-	// compress defaulst in 0: no compression
+	if opts.Compression != 0 {
+		sitemapFile.compress = opts.Compression
+	}
 
 	if opts.Domain != "" {
 		sitemapFile.domain = opts.Domain
